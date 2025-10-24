@@ -5,6 +5,15 @@
 **Status**: Draft
 **Input**: User description: "ฉันต้องการ app แจ้งเตือนเสียง ระฆัง แบบเรียบง่าย ใช้งานได้จริง และไม่เปลืองแบต เปลืองแรม ทำงานบนพื้นหลัง มือถือ anroid ได้ทุกรุ่น โดยที่ test run ผ่าน qrcode expo"
 
+## Clarifications
+
+### Session 2025-01-24
+- Q: What is the audio source and format for bell sounds? → A: Pre-packaged high-quality bell sound files (WAV format, 44.1kHz, 16-bit)
+- Q: What triggers background notifications? → A: Manual user-scheduled times through React Native interface
+- Q: What user roles and permissions are required? → A: Single user type with admin-level control over all app features
+- Q: How are user preferences and scheduled data stored? → A: Local SQLite database for schedules and preferences
+- Q: What is the Rust backend deployment architecture? → A: Standalone binary with React Native as client
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Instant Bell Access (Priority: P1)
@@ -33,7 +42,7 @@ User requires background notifications that leverage Rust's performance advantag
 
 **Acceptance Scenarios**:
 
-1. **Given** app is in background, **When** scheduled bell triggers, **Then** Rust service processes and plays audio without waking React Native frontend unnecessarily
+1. **Given** app is in background, **When** user-scheduled bell time triggers, **Then** Rust service processes and plays audio without waking React Native frontend unnecessarily
 2. **Given** phone is locked, **When** background bell occurs, **Then** Rust backend handles audio while using <5MB memory overhead
 3. **Given** multiple background notifications, **When** they trigger within short intervals, **Then** Rust service manages queue without performance impact
 
@@ -133,8 +142,8 @@ User requires a reliable app that benefits from TypeScript's type safety in Reac
 ### Functional Requirements
 
 - **FR-001**: React Native frontend MUST provide intuitive bell interface styled with Tailwind CSS that loads within 2 seconds
-- **FR-002**: Rust backend MUST process bell audio requests with <100ms latency
-- **FR-003**: System MUST support background operation using Rust's efficient task management
+- **FR-002**: Rust backend MUST process bell audio requests with <100ms latency using pre-packaged WAV files (44.1kHz, 16-bit)
+- **FR-003**: System MUST support background operation using Rust's efficient task management for user-scheduled notifications
 - **FR-004**: React Native app MUST maintain <50MB memory usage during operation including Tailwind CSS styling overhead
 - **FR-005**: Rust backend MUST ensure <1% daily battery consumption
 - **FR-006**: System MUST work on all Android 6.0+ devices through React Native compatibility
@@ -146,16 +155,20 @@ User requires a reliable app that benefits from TypeScript's type safety in Reac
 - **FR-012**: System MUST provide user preference setting in React Native UI for silent/vibrate mode behavior, with Rust backend executing user's choice
 - **FR-013**: React Native UI MUST offer silent mode options: respect system settings, always play, or custom schedules
 - **FR-014**: Rust backend MUST implement flexible audio handling based on user preferences from React Native frontend
+- **FR-015**: User preferences and schedules MUST be stored in local SQLite database
+- **FR-016**: Standalone Rust binary MUST communicate with React Native client via inter-process communication
 
 ### Key Entities *(include if feature involves data)*
 
-- **BellAudio**: Represents audio processing managed by Rust backend with timing, format, and playback state
+- **BellAudio**: Represents audio processing managed by Rust backend with pre-packaged WAV files (44.1kHz, 16-bit), timing, and playback state
 - **ReactNativeUI**: Frontend components styled with Tailwind CSS providing modern interface and mobile lifecycle management
-- **UserPreferences**: Settings managed in React Native UI with Tailwind styling, executed by Rust backend
+- **UserPreferences**: Settings managed in React Native UI with Tailwind styling, stored in local SQLite database, executed by Rust backend
 - **TailwindStyles**: Responsive design system using NativeWind for consistent, professional appearance across devices
 - **BackgroundTask**: Rust-managed background service for efficient notification processing
 - **ResourceMonitor**: Tracks battery and memory usage across React Native, Tailwind CSS, and Rust components
 - **TypeSafeAPI**: Communication layer maintaining type safety between TypeScript frontend and Rust backend
+- **ScheduleManager**: Manages user-scheduled bell times stored in SQLite database
+- **RustService**: Standalone binary process handling audio processing and background operations
 
 ## Success Criteria *(mandatory)*
 
@@ -172,3 +185,4 @@ User requires a reliable app that benefits from TypeScript's type safety in Reac
 - **SC-009**: User satisfaction score above 4.5/5.0 for modern UI design and usability
 - **SC-010**: Users can configure silent mode behavior through React Native settings with Rust backend executing preferences accurately
 - **SC-011**: Settings changes are applied immediately without requiring app restart
+- **SC-012**: User-scheduled notifications trigger reliably when device is in background or locked state
