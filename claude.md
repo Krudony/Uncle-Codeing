@@ -1,4 +1,4 @@
-# CLAUDE.md - Generic AI Assistant Guidelines
+﻿# CLAUDE.md - Generic AI Assistant Guidelines
 
 ## 📚 Table of Contents
 
